@@ -1,6 +1,6 @@
 # test_frontend
 A Product CRUD Application using Vue3, Vuex, Vue Router, axios with GraphQL api.
-The backend application can be downloaded from [here]
+The backend application can be downloaded from [here].
 
 ## Features
 - List products
@@ -16,7 +16,7 @@ The backend application can be downloaded from [here]
 
 ## Project setup
 ```bash
-git clone https://github.com/
+git clone https://github.com/JasonKong/test_frontend.git
 cd test_frontend
 ```
 Copy `.env.example` to `.env` and run
@@ -29,11 +29,6 @@ npm install
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
 ### Author
 Jason Kong
 
@@ -41,4 +36,5 @@ Jason Kong
    [Vuex]: <https://vuex.vuejs.org/>
    [axios]: <https://www.axios.com/>
    [Vue Sweetalert]:<https://github.com/avil13/vue-sweetalert2>
+   [here]: <https://github.com/JasonKong/test_backend.git>
    
