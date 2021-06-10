@@ -1,7 +1,8 @@
 <template>
     <div class="row border-1 p-2">
-        <div class="col-3 text-left">{{ product.category.name }}</div>
-        <div class="col-3 text-left">{{ product.name }}</div>
+        <div class="col-2 text-left">{{ product.category.name }}</div>
+        <div class="col-2 text-left">{{ product.subCategory.name }}</div>
+        <div class="col-2 text-left">{{ product.name }}</div>
         <div class="col-4 text-left">{{ product.description }}</div>
         <div class="col-2">
             <router-link

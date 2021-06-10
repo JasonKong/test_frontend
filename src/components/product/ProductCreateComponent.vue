@@ -13,8 +13,25 @@
                                     id="category_id"
                                     name="category_id"
                                     v-model="product.category_id"
+                                    @change="getSubCategories"
                             >
                                 <option v-for="category in categories"
+                                        v-bind:key="category.id"
+                                        v-bind:value="category.id">
+                                    {{ category.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row mb-2">
+                        <div class="col-6">
+                            <label>Sub category</label>
+                            <select class="form-control"
+                                    id="sub_category_id"
+                                    name="sub_category_id"
+                                    v-model="product.sub_category_id"
+                            >
+                                <option v-for="category in subCategories"
                                         v-bind:key="category.id"
                                         v-bind:value="category.id">
                                     {{ category.name }}
@@ -92,18 +109,23 @@
             // CategoryList
         },
 
-        computed: {...mapGetters(["isCreating", "createdData", "categories"])},
+        computed: {...mapGetters(["isCreating", "createdData", "categories", "subCategories"])},
 
         methods: {
-            ...mapActions(["storeProduct", "fetchAllCategories"]),
+            ...mapActions(["storeProduct", "fetchAllCategories", "fetchSubCategories"]),
             onSubmit() {
-                const {category_id, name, description} = this.product;
+                const {category_id, sub_category_id, name, description} = this.product;
                 this.storeProduct({
+                    category_id: category_id,
+                    sub_category_id: sub_category_id,
                     name: name,
                     description: description,
-                    category_id: category_id,
                 });
-            }
+            },
+            getSubCategories() {
+                const {category_id} = this.product;
+                this.fetchSubCategories(category_id);
+            },
         },
 
         watch: {

@@ -26,6 +26,23 @@
                         </div>
                         <div class="form-group row mb-2">
                             <div class="col-6">
+                                <label>Sub Category</label>
+                                <select class="form-control"
+                                        id="sub_category_id"
+                                        name="sub_category_id"
+                                        :value="product.sub_category_id"
+                                        @change="updateProductInputAction"
+                                >
+                                    <option v-for="category in subCategories"
+                                            v-bind:key="category.id"
+                                            v-bind:value="category.id">
+                                        {{ category.name }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row mb-2">
+                            <div class="col-6">
                                 <label>Product Name:</label>
                                 <Field
                                         id="name"
@@ -98,24 +115,29 @@
         created: function () {
             this.id = this.$route.params.id;
             this.fetchDetailProduct(this.id);
+
             this.fetchAllCategories();
+            this.fetchSubCategories();
         },
 
-        computed: {...mapGetters(["isUpdating", "updatedData", "product", "categories"])},
+        computed: {...mapGetters(["isUpdating", "updatedData", "product", "categories", "subCategories"])},
 
         methods: {
-            ...mapActions(["updateProduct", "updateProductInput", "fetchDetailProduct", "fetchAllCategories"]),
+            ...mapActions(["updateProduct", "updateProductInput", "fetchDetailProduct", "fetchAllCategories", "fetchSubCategories"]),
             onSubmit() {
-                const {category_id, name, description} = this.product;
+                const {category_id,sub_category_id, name, description} = this.product;
                 // return false;
                 this.updateProduct({
                     id: this.id,
                     name: name,
                     description: description,
                     category_id: category_id,
+                    sub_category_id: sub_category_id,
                 });
             },
             updateProductInputAction(e) {
+                const {category_id} = this.product;
+                this.fetchSubCategories(category_id);
                 this.updateProductInput(e);
             },
         },

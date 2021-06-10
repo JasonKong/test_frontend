@@ -3,6 +3,7 @@ import axios from 'axios';
 // initial state
 const state = () => ({
     categories: [],
+    subCategories:[],
     products: [],
     product: null,
     isCreating: false,
@@ -15,6 +16,7 @@ const state = () => ({
 // getters
 const getters = {
     categories: state => state.categories,
+    subCategories: state => state.subCategories,
     productList: state => state.products,
     product: state => state.product,
     isCreating: state => state.isCreating,
@@ -42,18 +44,45 @@ const actions = {
             );
     },
 
+    async fetchSubCategories({commit}, category_id=null) {
+        let query = ''
+        if (category_id !== '') {
+            query = '{ subCategories(category_id:' + category_id +'){id,name} }'
+        } else {
+            query = '{ subCategories{id,name} }'
+        }
+
+        await axios.post(
+            process.env.VUE_APP_BACKEND_API_URL, {
+                query: query
+            })
+            .then(res => {
+                const subCategories = res.data.data.subCategories;
+                commit('setSubCategories', subCategories);
+            }).catch(err => {
+                    console.log('error', err);
+                }
+            );
+    },
+
     async fetchAllProducts({commit}, filter = null) {
         let search = '';
+        let sub_category_id = '';
         if (filter !== null) {
             search = filter.search;
+            sub_category_id = filter.sub_category_id;
         }
 
         let query = ''
         if (search !== '') {
-            query = '{ products(category_id:' + search +
-                '){id,category_id,name,description,category{name}} }'
+            query = '{ products(category_id:' + search
+            if (sub_category_id) {
+                query += ',sub_category_id:' + sub_category_id
+            }
+
+            query +='){id,category_id,name,description,category{name}, subCategory{name}} }'
         } else {
-            query = '{ products{id,category_id,name,description,category{name}} }'
+            query = '{ products{id,category_id,name,description,category{name}, subCategory{name}} }'
         }
 
         await axios.post(
@@ -62,6 +91,7 @@ const actions = {
             })
             .then(res => {
                 const products = res.data.data.products;
+                console.log(products);
                 commit('setProducts', products);
             }).catch(err => {
                     console.log('error', err);
@@ -72,7 +102,7 @@ const actions = {
     async fetchDetailProduct({commit}, id) {
 
         await axios.post(`${process.env.VUE_APP_BACKEND_API_URL}`, {
-            query: '{ product(id:' + id + '){id,category_id,name,description} }'
+            query: '{ product(id:' + id + '){id,category_id,sub_category_id,name,description} }'
         })
             .then(res => {
                 commit('setProductDetail', res.data.data.product);
@@ -84,8 +114,10 @@ const actions = {
     async storeProduct({commit}, product) {
         commit('setProductIsCreating', true);
 
-        let query = 'mutation {createProduct(category_id:' + product.category_id + ',name:"' + product.name +
-            '",description:"' + product.description + '") { id,category_id,name,description,category{name}}}';
+        let query = 'mutation {createProduct(category_id:' + product.category_id +
+            ',sub_category_id:' + product.sub_category_id +
+            ',name:"' + product.name +
+            '",description:"' + product.description + '") { id,category_id,name,description,category{name},subCategory{name}}}';
 
         await axios.post(
             `${process.env.VUE_APP_BACKEND_API_URL}`,
@@ -102,8 +134,11 @@ const actions = {
     async updateProduct({commit}, product) {
         commit('setProductIsUpdating', true);
 
-        let query = 'mutation {updateProduct(id:' + product.id + 'category_id:' + product.category_id + ',name:"' + product.name +
-            '",description:"' + product.description + '") { id,category_id,name,description,category{name}}}';
+        let query = 'mutation {updateProduct(id:' + product.id
+            + ', category_id:' + product.category_id
+            + ', sub_category_id:' + product.sub_category_id
+            + ',name:"' + product.name +
+            '",description:"' + product.description + '") { id,category_id,name,description,category{name},subCategory{name}}}';
 
         await axios.post(`${process.env.VUE_APP_BACKEND_API_URL}`, {
             query: query
@@ -145,6 +180,10 @@ const mutations = {
 
     setCategories: (state, categories) => {
         state.categories = categories
+    },
+
+    setSubCategories: (state, subCategories) => {
+        state.subCategories = subCategories
     },
 
     setProducts: (state, products) => {
