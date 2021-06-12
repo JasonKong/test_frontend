@@ -5,12 +5,15 @@ const state = () => ({
     categories: [],
     subCategories:[],
     products: [],
+    userData:null,
+    isLoggingIn: false,
     product: null,
     isCreating: false,
     createdData: null,
     isUpdating: false,
     updatedData: null,
     isDeleting: false,
+    token: localStorage.getItem('token') || ''
 })
 
 // getters
@@ -19,15 +22,43 @@ const getters = {
     subCategories: state => state.subCategories,
     productList: state => state.products,
     product: state => state.product,
+    userData: state => state.userData,
     isCreating: state => state.isCreating,
     isUpdating: state => state.isUpdating,
     createdData: state => state.createdData,
     updatedData: state => state.updatedData,
     isDeleting: state => state.isDeleting,
+    isAuthenticated: state => !!state.token,
 };
 
 // actions
 const actions = {
+
+    async login({commit}, user) {
+
+        // commit('setUserIsLoggingIn', true);
+
+
+        let query = 'mutation {login(email:"' + user.email +
+            '",password:"' + user.password + '")}';
+
+        await axios.post(
+            process.env.VUE_APP_BACKEND_API_URL + '/auth', {
+                query: query
+            })
+            .then(res => {
+                const userData = res.data.data.login;
+                commit('setUserData', userData);
+                const userObject = JSON.parse(userData);
+                localStorage.setItem('token', userObject.access_token)
+                console.log(userObject)
+                console.log(userObject.access_token)
+
+            }).catch(err => {
+                    console.log('error', err);
+                }
+            );
+    },
 
     async fetchAllCategories({commit}) {
         const query = '{ categories{id,name} }'
@@ -188,6 +219,21 @@ const mutations = {
 
     setProducts: (state, products) => {
         state.products = products
+    },
+
+    setUserData: (state, userData) => {
+        state.userData = userData
+    },
+    setToken:(state, token) => {
+        state.token = token
+        axios.interceptors.request.use(
+            config => {
+                config.headers['Authorization'] = 'Bearer ' + this.$cookie.get('token');
+                return config;
+            },
+            error => {
+                Promise.reject(error)
+            });
     },
 
     setProductDetail: (state, product) => {

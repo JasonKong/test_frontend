@@ -1,21 +1,16 @@
 <template>
     <div class="home">
-        <div class="pull-right">
-            <router-link to="/product/create" class="btn btn-primary">
-                <i class="fa fa-plus-circle"></i> Add Product
-            </router-link>
-        </div>
         <div>
-            <product-list-component></product-list-component>
+            <login-component></login-component>
         </div>
     </div>
 </template>
 
 <script>
-    import ProductListComponent from '../components/product/ProductListComponent.vue';
+    import LoginComponent from '../components/auth/LoginComponent.vue';
 
     export default {
-        components: {ProductListComponent},
+        components: {LoginComponent},
         name: "Home",
     };
 </script>

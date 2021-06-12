@@ -138,7 +138,7 @@
                         timer: 2000,
                     });
 
-                    this.$router.push({name: "Home"});
+                    this.$router.push({name: "Products"});
                 }
             },
         },
